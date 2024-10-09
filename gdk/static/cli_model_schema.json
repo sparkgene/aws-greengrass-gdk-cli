@@ -111,7 +111,7 @@
                         "init",
                         "build",
                         "publish",
-                        "list"
+                        "local"
                     ],
                     "properties": {
                         "init": {
@@ -122,6 +122,9 @@
                         },
                         "publish": {
                             "$ref": "#/$defs/publish"
+                        },
+                        "local": {
+                            "$ref": "#/$defs/local"
                         },
                         "list": {
                             "$ref": "#/$defs/list"
@@ -191,6 +194,34 @@
             },
             "additionalProperties": false
         },
+        "local": {
+            "type": "object",
+            "description": "Sub command under 'component' command. This is one of the sub-parsers under 'component local' parser.",
+            "properties": {
+                "sub-commands": {
+                    "required": [
+                        "deploy",
+                        "list",
+                        "remove"
+                    ],
+                    "properties": {
+                        "deploy": {
+                            "$ref": "#/$defs/local-deploy"
+                        },
+                        "list": {
+                            "$ref": "#/$defs/local-list"
+                        },
+                        "remove": {
+                            "$ref": "#/$defs/local-remove"
+                        }
+                    }
+                },
+                "help": {
+                    "$ref": "#/$defs/help"
+                }
+           },
+            "additionalProperties": false
+        },
         "init": {
             "type": "object",
             "description": "Sub command under 'component' command. This is one of the sub-parsers under 'component' parser.",
@@ -243,6 +274,135 @@
                 "help"
             ],
             "properties": {
+                "help": {
+                    "$ref": "#/$defs/help"
+                }
+            },
+            "additionalProperties": false
+        },
+        "local-deploy": {
+            "type": "object",
+            "description": "Sub command under 'component local' command. This is one of the sub-parsers under 'component local deploy' parser.",
+            "required": [
+                "arguments",
+                "help"
+            ],
+            "properties": {
+                "arguments": {
+                    "description": "List of all the arguments that can be passed with the local deploy command.",
+                    "required": [
+                        "component_dir"
+                    ],
+                    "properties": {
+                        "host": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "user": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "password": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "port": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "key_file": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "component_dir": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "greengrass_dir": {
+                            "$ref": "#/$defs/argument"
+                        }
+                    }
+                },
+                "help": {
+                    "$ref": "#/$defs/help"
+                }
+            },
+            "additionalProperties": false
+        },
+        "local-remove": {
+            "type": "object",
+            "description": "Sub command under 'component local' command. This is one of the sub-parsers under 'component local remove' parser.",
+            "required": [
+                "arguments",
+                "help"
+            ],
+            "properties": {
+                "arguments": {
+                    "description": "List of all the arguments that can be passed with the remove command.",
+                    "required": [
+                        "component_dir"
+                    ],
+                    "properties": {
+                        "host": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "user": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "password": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "port": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "key_file": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "component_dir": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "greengrass_dir": {
+                            "$ref": "#/$defs/argument"
+                        }
+                    }
+                },
+                "help": {
+                    "$ref": "#/$defs/help"
+                }
+            },
+            "additionalProperties": false
+        },
+        "local-list": {
+            "type": "object",
+            "description": "Sub command under 'component local' command. This is one of the sub-parsers under 'component local list' parser.",
+            "required": [
+                "arguments",
+                "help"
+            ],
+            "properties": {
+                "arguments": {
+                    "description": "List of all the arguments that can be passed with the list command.",
+                    "required": [
+                        "component_dir"
+                    ],
+                    "properties": {
+                        "host": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "user": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "password": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "port": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "key_file": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "component_dir": {
+                            "$ref": "#/$defs/argument"
+                        },
+                        "greengrass_dir": {
+                            "$ref": "#/$defs/argument"
+                        }
+                    }
+                },
                 "help": {
                     "$ref": "#/$defs/help"
                 }

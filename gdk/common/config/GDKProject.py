@@ -17,6 +17,7 @@ class GDKProject:
 
         self.component_name = next(iter(self._component))
         self.component_config = self._component.get(self.component_name)
+        self.component_local_config = self.component_config.get("local", {})
         self.test_config = TestConfiguration(self._test)
 
         component_version = self.component_config.get("version")

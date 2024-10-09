@@ -96,6 +96,143 @@
                             }
                         }
                     },
+                    "local":{
+                        "sub-commands": {
+                            "deploy":{
+                                "help": "Create a new version of a GreengrassV2 component and deploy to Greengrass Core device",
+                                "arguments": {
+                                    "host": {
+                                        "name": [
+                                            "-H",
+                                            "--host"
+                                        ],
+                                        "help": "Host name/IP address which AWS IoT Greengrass Core is running."
+                                    },
+                                    "user": {
+                                        "name": [
+                                            "-u",
+                                            "--user"
+                                        ],
+                                        "help": "User name to SSH the remote host."
+                                    },
+                                    "port": {
+                                        "name": [
+                                            "-p",
+                                            "--port"
+                                        ],
+                                        "help": "Port number to SSH the remote host. For default port 22 will be used."
+                                    },
+                                    "key_file": {
+                                        "name": [
+                                            "--key-file"
+                                        ],
+                                        "help": "Path to the key file used for SSH."
+                                    },
+                                    "component_dir": {
+                                        "name": [
+                                            "--component-dir"
+                                        ],
+                                        "help": "Path to copy the component on the host."
+                                    },
+                                    "greengrass_dir": {
+                                        "name": [
+                                            "--greengrass-dir"
+                                        ],
+                                        "help": "Path to the Greengrass Core installation directory on the host machine. '/greengrass/v2' is used for default."
+                                    }
+                                }
+                            },
+                            "list":{
+                                "help": "List the deployed component on Greengrass Core",
+                                "arguments": {
+                                    "host": {
+                                        "name": [
+                                            "-H",
+                                            "--host"
+                                        ],
+                                        "help": "Host name/IP address which AWS IoT Greengrass Core is running."
+                                    },
+                                    "user": {
+                                        "name": [
+                                            "-u",
+                                            "--user"
+                                        ],
+                                        "help": "User name to SSH the remote host."
+                                    },
+                                    "port": {
+                                        "name": [
+                                            "-p",
+                                            "--port"
+                                        ],
+                                        "help": "Port number to SSH the remote host. For default port 22 will be used."
+                                    },
+                                    "key_file": {
+                                        "name": [
+                                            "--key-file"
+                                        ],
+                                        "help": "Path to the key file used for SSH."
+                                    },
+                                    "component_dir": {
+                                        "name": [
+                                            "--component-dir"
+                                        ],
+                                        "help": "Path to copy the component on the host."
+                                    },
+                                    "greengrass_dir": {
+                                        "name": [
+                                            "--greengrass-dir"
+                                        ],
+                                        "help": "Path to the Greengrass Core installation directory on the host machine. '/greengrass/v2' is used for default."
+                                    }
+                                }
+                            },
+                            "remove":{
+                                "help": "Remove the deployed component from Greengrass Core",
+                                "arguments": {
+                                    "host": {
+                                        "name": [
+                                            "-H",
+                                            "--host"
+                                        ],
+                                        "help": "Host name/IP address which AWS IoT Greengrass Core is running."
+                                    },
+                                    "user": {
+                                        "name": [
+                                            "-u",
+                                            "--user"
+                                        ],
+                                        "help": "User name to SSH the remote host."
+                                    },
+                                    "port": {
+                                        "name": [
+                                            "-p",
+                                            "--port"
+                                        ],
+                                        "help": "Port number to SSH the remote host. For default port 22 will be used."
+                                    },
+                                    "key_file": {
+                                        "name": [
+                                            "--key-file"
+                                        ],
+                                        "help": "Path to the key file used for SSH."
+                                    },
+                                    "component_dir": {
+                                        "name": [
+                                            "--component-dir"
+                                        ],
+                                        "help": "Path to copy the component on the host."
+                                    },
+                                    "greengrass_dir": {
+                                        "name": [
+                                            "--greengrass-dir"
+                                        ],
+                                        "help": "Path to the Greengrass Core installation directory on the host machine. '/greengrass/v2' is used for default."
+                                    }
+                                }
+                            }
+                        },
+                        "help": "Commands for developing your component at local environoment."
+                    },
                     "list": {
                         "help": "List all the available component templates and repositories from Greengrass Software Catalog",
                         "arguments": {

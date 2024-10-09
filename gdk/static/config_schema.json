@@ -138,6 +138,36 @@
                             "required": [
                                 "bucket"
                             ]
+                        },
+                        "local": {
+                            "type": "object",
+                            "description": "Configuration used to deploy component for development over SSH",
+                            "properties": {
+                                "host":{
+                                    "type": "string",
+                                    "description": "Host name/IP address which AWS IoT Greengrass is running."
+                                },
+                                "user":{
+                                    "type": "string",
+                                    "description": "User name to SSH."
+                                },
+                                "component_dir":{
+                                    "type": "string",
+                                    "description": "Path to copy the component on the host."
+                                },
+                                "port":{
+                                    "type": "string",
+                                    "description": "Port number to SSH. For default port 22 will use."
+                                },
+                                "key_file":{
+                                    "type": "string",
+                                    "description": "Path to the key file used for SSH."
+                                },
+                                "greengrass_dir":{
+                                    "type": "string",
+                                    "description": "Path to the Greengrass Core installation directory on the host machine. '/greengrass/v2' is used for default."
+                                }
+                            }
                         }
                     },
                     "required": [
