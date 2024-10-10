@@ -21,6 +21,9 @@ class LocalDeployCommand(RemoteCommand):
         self.local_deploy_config = ComponentLocalConfiguration(command_args)
 
     def run(self):
+        """
+        Deploy the component to Greegrass Core
+        """
         logging.info("Deploy the component to Greengrass Core.")
         version = self._get_version()
         logging.info("Component version: %s", version)
@@ -53,6 +56,12 @@ class LocalDeployCommand(RemoteCommand):
             raise
 
     def deploy(self, version):
+        """
+        Deploy the component to Greegrass Core
+        Parameters
+        ----------
+          version(str): New version for the component
+        """
         logging.info("deploy component")
 
         cmd = []
@@ -80,6 +89,9 @@ class LocalDeployCommand(RemoteCommand):
         logging.info("Deploy component request successful")
 
     def _get_version(self):
+        """
+        Get the component version. If the version is "NEXT_PATCH", get the version from Greengrass component list
+        """
         logging.debug("Get component version")
         if not self.local_deploy_config.component_version == "NEXT_PATCH":
             return self.local_deploy_config.component_version
@@ -100,11 +112,23 @@ class LocalDeployCommand(RemoteCommand):
         return "0.0.1"
 
     def _get_next_version(self, version):
+        """
+        Increment the patch version of the component
+        Parameters
+        ----------
+          version(str): Current version of the component
+        Returns
+        -------
+          str: Next version of the component
+        """
         version_parts = version.split(".")
         version_parts[-1] = str(int(version_parts[-1]) + 1)
         return ".".join(version_parts)
 
     def _copy_to_remote(self):
+        """
+        Copy artifacts and recipes to remote host
+        """
         source_dir = self.local_deploy_config.gg_local_build_dir
 
         destination = (self.local_deploy_config.user + "@" +
@@ -122,6 +146,12 @@ class LocalDeployCommand(RemoteCommand):
         logging.info("Copy component successful")
 
     def _create_build_dir(self, version):
+        """
+        Create build directory for artifacts and recipes. This directory will be copied to remote host
+        Parameters
+        ----------
+          version(str): Component version
+        """
         utils.clean_dir(self.local_deploy_config.gg_local_build_dir)
 
         logging.debug("Creating '%s' directory with artifacts and recipes.", consts.greengrass_local_build_dir)
@@ -131,6 +161,9 @@ class LocalDeployCommand(RemoteCommand):
         Path.mkdir(artifact_path, parents=True, exist_ok=True)
 
     def _copy_artifacts(self, version):
+        """
+        Copy artifacts and recipes to local build directory
+        """
         target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir)
 
         build_system = ComponentBuildSystem.get(self.project_config.build_system)
@@ -171,6 +204,12 @@ class LocalDeployCommand(RemoteCommand):
         logging.debug("Copied artifacts to %s", target_dir)
 
     def _create_recipe(self, version):
+        """
+        Create recipe file for the component with new version
+        Parameters
+        ----------
+          version(str): Component version
+        """
         logging.info("Updating the component recipe %s-%s.",
                      self.project_config.component_name, version)
         recipe_file_path = Path(self.project_config.gg_build_recipes_dir).joinpath(self.project_config.recipe_file.name)

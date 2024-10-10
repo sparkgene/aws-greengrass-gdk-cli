@@ -10,6 +10,13 @@ class RemoteCommand():
         self.local_deploy_config = ComponentLocalConfiguration(command_args)
 
     def _ssh_command(self):
+        """
+        Returns an array of ssh command with the required parameters
+        Returns
+        -------
+          ssh_cmd(list): An array of ssh command with the required parameters
+        """
+        logging.debug("Creating SSH command")
         ssh_cmd = []
         if self.local_deploy_config.host:
             ssh_cmd.append("ssh")
@@ -23,6 +30,14 @@ class RemoteCommand():
         return ssh_cmd
 
     def run_scp_command(self, source, destination, timeout=60):
+        """
+        Executes scp command to copy files from source to destination
+        Parameters
+        ----------
+          source(str): Source file path
+          destination(str): Destination file path
+          timeout(int): Timeout for the scp command
+        """
         logging.info(f"SCP To: {destination} From: {source}")
 
         scp_cmd = []
@@ -49,6 +64,13 @@ class RemoteCommand():
             logging.info(result.stdout)
 
     def run_command(self, commands, timeout=60):
+        """
+        Executes a command on the remote host
+        Parameters
+        ----------
+          commands(list): List of commands to be executed on the remote host
+          timeout(int): Timeout for the command
+        """
         remote_cmd = self._ssh_command() + commands
 
         logging.debug("run_command: " + " ".join(remote_cmd))
@@ -65,6 +87,9 @@ class RemoteCommand():
         return result.stdout
 
     def _check_remote_dir_exist(self):
+        """
+        Check the existence of remote dir. If it doesn't exist, create it.
+        """
         logging.info("Check remote dir")
         command = self._ssh_command()
         command.append("ls")
@@ -84,6 +109,9 @@ class RemoteCommand():
                 raise Exception("Command failed: " + " ".join(command))
 
     def _create_remote_dir(self):
+        """
+        Create remote dir
+        """
         logging.info("Creating remote dir")
         command = self._ssh_command()
         command.append("mkdir")

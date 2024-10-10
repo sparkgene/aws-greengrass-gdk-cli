@@ -7,6 +7,9 @@ class LocalListCommand(RemoteCommand):
         super().__init__(command_args)
 
     def run(self):
+        """
+        Run the greengrass-cli command to list components
+        """
         cmd = []
         cmd.append("sudo")
         cmd.append(str(

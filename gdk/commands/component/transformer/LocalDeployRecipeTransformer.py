@@ -18,6 +18,9 @@ class LocalDeployRecipeTransformer:
         return CaseInsensitiveRecipeFile().read(recipe_file_path)
 
     def transform(self, recipe_file_path, deploy_recipe_file, version) -> None:
+        """
+        Transform the component recipe to be deployed to Greengrass Core.
+        """
         logging.debug(f"Read recipe file: {recipe_file_path}")
         component_recipe = self._read_recipe(recipe_file_path)
         component_recipe.update_value("ComponentVersion", version)
@@ -38,6 +41,12 @@ class LocalDeployRecipeTransformer:
         self.verify_recipe(deploy_recipe_file)
 
     def replace_decompressed_path(self, recipe_path) -> None:
+        """
+        Replace decompressed path with path in the recipe file for zip build component
+        Parameters
+        ----------
+          recipe_path(str): Path to the recipe file
+        """
         recipe = Path(recipe_path)
         new_recipe = Path(recipe_path)
 
@@ -45,6 +54,12 @@ class LocalDeployRecipeTransformer:
         new_recipe.write_text(contents)
 
     def verify_recipe(self, recipe_file_path) -> None:
+        """
+        Validate the built recipe against the Greengrass recipe schema.
+        Parameters
+        ----------
+          recipe_file_path(str): Path to the recipe file
+        """
         logging.info(f"Validating the file size of the built recipe {recipe_file_path}")
         # Validate the size of the created recipe file so we can raise an exception if it is too big
         valid_file_size, input_recipe_file_size = utils.is_recipe_size_valid(recipe_file_path)

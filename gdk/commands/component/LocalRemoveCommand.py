@@ -11,6 +11,9 @@ class LocalRemoveCommand(RemoteCommand):
         self.local_deploy_config = ComponentLocalConfiguration(command_args)
 
     def run(self):
+        """
+        Remove the component from Greegrass Core
+        """
         cmd = []
         cmd.append("sudo")
         cmd.append(str(
