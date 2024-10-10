@@ -14,9 +14,12 @@ class LocalDeployRecipeTransformer:
     def __init__(self, _project_config: ComponentLocalConfiguration) -> None:
         self.project_config = _project_config
 
-    def transform(self, recipe_file_path, version) -> None:
-        logging.debug(recipe_file_path)
-        component_recipe = CaseInsensitiveRecipeFile().read(recipe_file_path)
+    def _read_recipe(self, recipe_file_path):
+        return CaseInsensitiveRecipeFile().read(recipe_file_path)
+
+    def transform(self, recipe_file_path, deploy_recipe_file, version) -> None:
+        logging.debug(f"Read recipe file: {recipe_file_path}")
+        component_recipe = self._read_recipe(recipe_file_path)
         component_recipe.update_value("ComponentVersion", version)
         component_recipe_dict = component_recipe.to_dict()
 
@@ -27,9 +30,6 @@ class LocalDeployRecipeTransformer:
 
         recipe_for_local = CaseInsensitiveDict(component_recipe_dict)
 
-        deploy_recipe_file = self.project_config.gg_local_build_recipes_dir.joinpath(
-            f"{self.project_config.component_name}-{version}.{self.project_config.recipe_file.name.split('.')[-1]}"
-        )
         logging.debug("Creating component recipe at '%s'.", deploy_recipe_file)
         CaseInsensitiveRecipeFile().write(deploy_recipe_file, recipe_for_local)
 

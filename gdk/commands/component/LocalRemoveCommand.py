@@ -19,7 +19,5 @@ class LocalRemoveCommand(RemoteCommand):
         cmd.append("create")
         cmd.append("--remove")
         cmd.append(self.project_config.component_name)
-        cmd.append("--recipeDir")
-        cmd.append(self.local_deploy_config.remote_component_dir + "/recipes")
 
         self.run_command(cmd)

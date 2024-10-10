@@ -11,6 +11,8 @@ class ComponentLocalConfiguration(GDKProject):
         self.user = self._get_user()
         if self.host and self.user == "":
             raise Exception("SSH user configuration is required for remote command.")
+        if self.user and self.host == "":
+            raise Exception("SSH host configuration is required for remote command.")
 
         self.remote_component_dir = self._get_component_dir()
         self.port = self._get_port()
@@ -29,21 +31,14 @@ class ComponentLocalConfiguration(GDKProject):
         self.deploy_recipe_file = self.gg_local_build_recipes_dir.joinpath(
             f"{self.component_name}-{self.component_version}.{self.recipe_file.name.split('.')[-1]}"
         )
-        """
-        print(self.gg_local_build_dir)
-        print(self.gg_local_build_artifacts_dir)
-        print(self.gg_local_build_recipes_dir)
-        print(self.gg_local_build_component_artifacts_dir)
-        print(self.deploy_recipe_file)
-        """
 
     def _get_host(self):
         _host = ""
         _host_args = self._args.get("host")
-        if _host_args:
-            _host = _host_args
-        else:
+        if not _host_args:
             _host = self.component_local_config.get("host", "")
+        else:
+            _host = _host_args
         return _host
 
     def _get_user(self):

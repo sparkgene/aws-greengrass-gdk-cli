@@ -157,10 +157,16 @@ class LocalDeployCommand(RemoteCommand):
                 dirs_exist_ok=True
             )
         else:
+            if target_dir.endswith("NEXT_PATCH"):
+                target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(version))
+            logging.info(target_dir)
+            source_dir = self.local_deploy_config.gg_build_component_artifacts_dir
+            logging.info(source_dir)
             # other build system store artifacts in artifacts dir
             shutil.copytree(
-                self.local_deploy_config.gg_build_component_artifacts_dir,
-                target_dir
+                source_dir,
+                target_dir,
+                dirs_exist_ok=True
             )
         logging.debug("Copied artifacts to %s", target_dir)
 
@@ -168,4 +174,7 @@ class LocalDeployCommand(RemoteCommand):
         logging.info("Updating the component recipe %s-%s.",
                      self.project_config.component_name, version)
         recipe_file_path = Path(self.project_config.gg_build_recipes_dir).joinpath(self.project_config.recipe_file.name)
-        LocalDeployRecipeTransformer(self.local_deploy_config).transform(recipe_file_path, version)
+        deploy_recipe_file = self.local_deploy_config.gg_local_build_recipes_dir.joinpath(
+            f"{self.project_config.component_name}-{version}.{self.project_config.recipe_file.name.split('.')[-1]}"
+        )
+        LocalDeployRecipeTransformer(self.local_deploy_config).transform(recipe_file_path, deploy_recipe_file, version)
