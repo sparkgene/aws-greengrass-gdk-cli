@@ -75,14 +75,10 @@ class LocalDeployCommand(RemoteCommand):
         cmd.append("--recipeDir")
         cmd.append(str(
             Path(self.local_deploy_config.remote_component_dir).joinpath("recipes")))
-        build_component_artifacts = list(self.project_config.gg_build_component_artifacts_dir.iterdir())
-        if not build_component_artifacts:
-            logging.info("No artifacts found in local build dir")
-        else:
-            cmd.append("--artifactDir")
-            cmd.append(str(
-                Path(self.local_deploy_config.remote_component_dir).joinpath("artifacts")
-            ))
+        cmd.append("--artifactDir")
+        cmd.append(str(
+            Path(self.local_deploy_config.remote_component_dir).joinpath("artifacts")
+        ))
 
         self.run_command(cmd)
 
@@ -166,8 +162,8 @@ class LocalDeployCommand(RemoteCommand):
         """
         target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir)
 
-        build_system = ComponentBuildSystem.get(self.project_config.build_system)
         if self.project_config.build_system == "zip":
+            build_system = ComponentBuildSystem.get(self.project_config.build_system)
             zip_build_dir = utils.get_current_directory().joinpath(*build_system.build_folder).resolve()
             project_dir_name = utils.get_current_directory().name
             source_dir = os.path.join(zip_build_dir, project_dir_name)
@@ -192,15 +188,22 @@ class LocalDeployCommand(RemoteCommand):
         else:
             if target_dir.endswith("NEXT_PATCH"):
                 target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(version))
-            logging.info(target_dir)
             source_dir = self.local_deploy_config.gg_build_component_artifacts_dir
-            logging.info(source_dir)
             # other build system store artifacts in artifacts dir
             shutil.copytree(
                 source_dir,
                 target_dir,
                 dirs_exist_ok=True
             )
+            if self.project_config.build_system == "custom":
+                # custom build may be zip file
+                if Path(target_dir).joinpath(self.project_config.component_name + ".zip").exists():
+                    logging.info("Unpack: " + self.project_config.component_name + ".zip")
+                    shutil.unpack_archive(
+                        Path(target_dir).joinpath(self.project_config.component_name + ".zip"),
+                        Path(target_dir).joinpath(self.project_config.component_name))
+                    os.remove(Path(target_dir).joinpath(self.project_config.component_name + ".zip"))
+
         logging.debug("Copied artifacts to %s", target_dir)
 
     def _create_recipe(self, version):

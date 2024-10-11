@@ -24,12 +24,9 @@ class LocalDeployRecipeTransformer:
         logging.debug(f"Read recipe file: {recipe_file_path}")
         component_recipe = self._read_recipe(recipe_file_path)
         component_recipe.update_value("ComponentVersion", version)
-        component_recipe_dict = component_recipe.to_dict()
 
         # remove Artifact
-        for i in range(len(component_recipe_dict["Manifests"])):
-            if "Artifacts" in component_recipe_dict["Manifests"][i]:
-                del component_recipe_dict["Manifests"][i]["Artifacts"]
+        component_recipe_dict = self.remove_s3_artifact(component_recipe)
 
         recipe_for_local = CaseInsensitiveDict(component_recipe_dict)
 
@@ -39,6 +36,24 @@ class LocalDeployRecipeTransformer:
         self.replace_decompressed_path(deploy_recipe_file)
 
         self.verify_recipe(deploy_recipe_file)
+
+    def remove_s3_artifact(self, component_recipe):
+        component_recipe_dict = component_recipe.to_dict()
+        for i in range(len(component_recipe_dict["Manifests"])):
+            if "Artifacts" in component_recipe_dict["Manifests"][i]:
+                keep_artifact = False
+                for j in range(len(component_recipe_dict["Manifests"][i]["Artifacts"]) - 1, -1, -1):
+                    if "URI" in component_recipe_dict["Manifests"][i]["Artifacts"][j]:
+                        if component_recipe_dict["Manifests"][i]["Artifacts"][j]["URI"].startswith("s3:"):
+                            del component_recipe_dict["Manifests"][i]["Artifacts"][j]["URI"]
+                        else:
+                            keep_artifact = True
+                    else:
+                        keep_artifact = True
+                if not keep_artifact:
+                    del component_recipe_dict["Manifests"][i]["Artifacts"]
+
+        return component_recipe_dict
 
     def replace_decompressed_path(self, recipe_path) -> None:
         """
