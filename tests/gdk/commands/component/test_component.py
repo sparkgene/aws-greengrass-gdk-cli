@@ -5,6 +5,9 @@ from gdk.commands.component.InitCommand import InitCommand
 from gdk.commands.component.ListCommand import ListCommand
 from gdk.commands.component.PublishCommand import PublishCommand
 from gdk.common.exceptions.CommandError import ConflictingArgumentsError
+from gdk.commands.component.LocalDeployCommand import LocalDeployCommand
+from gdk.commands.component.LocalListCommand import LocalListCommand
+from gdk.commands.component.LocalRemoveCommand import LocalRemoveCommand
 
 
 def test_component_init(mocker):
@@ -93,3 +96,30 @@ def test_component_list_exception(mocker):
     assert mock_component_list.call_count == 1
     assert mock_component_list_run.call_count == 0
     mock_component_list.assert_called_with(d_args)
+
+
+def test_component_local_deploy(mocker):
+    mock_component_local_deploy = mocker.patch.object(LocalDeployCommand, "__init__", return_value=None)
+    mock_component_local_deploy_run = mocker.patch.object(LocalDeployCommand, "run", return_value=None)
+    component.local_deploy({})
+    assert mock_component_local_deploy.call_count == 1
+    assert mock_component_local_deploy_run.call_count == 1
+    mock_component_local_deploy.assert_called_with({})
+
+
+def test_component_local_list(mocker):
+    mock_component_local_list = mocker.patch.object(LocalListCommand, "__init__", return_value=None)
+    mock_component_local_list_run = mocker.patch.object(LocalListCommand, "run", return_value=None)
+    component.local_list({})
+    assert mock_component_local_list.call_count == 1
+    assert mock_component_local_list_run.call_count == 1
+    mock_component_local_list.assert_called_with({})
+
+
+def test_component_local_remove(mocker):
+    mock_component_local_remove = mocker.patch.object(LocalRemoveCommand, "__init__", return_value=None)
+    mock_component_local_remove_run = mocker.patch.object(LocalRemoveCommand, "run", return_value=None)
+    component.local_remove({})
+    assert mock_component_local_remove.call_count == 1
+    assert mock_component_local_remove_run.call_count == 1
+    mock_component_local_remove.assert_called_with({})

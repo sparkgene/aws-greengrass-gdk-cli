@@ -87,7 +87,7 @@ class Zip(GDKBuildSystem):
 
         When no `exclude` option is present on the build configuration, it excludes:
         1. project config file -> gdk-config.json
-        2. greengrass-build directory
+        2. greengrass-build* directory
         3. recipe file
         4. tests folder
         5. node_modules
@@ -95,7 +95,7 @@ class Zip(GDKBuildSystem):
 
         Otherwise it excludes:
         1. project config file -> gdk-config.json
-        2. greengrass-build directory
+        2. greengrass-build* directory
         3. recipe file
         4. Any pattern defined on the exclude pattern array
         """
@@ -104,6 +104,7 @@ class Zip(GDKBuildSystem):
         ignore_list = [
             consts.cli_project_config_file,
             consts.greengrass_build_dir,
+            consts.greengrass_local_build_dir,
             project_config.recipe_file.name,
         ]
 

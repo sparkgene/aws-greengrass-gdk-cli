@@ -54,6 +54,24 @@ def test_main_parse_args_test_build(mocker):
     assert mock_test_build.called
 
 
+def test_main_parse_args_local_deploy(mocker):
+    mock_component_local = mocker.patch("gdk.commands.component.component.local_deploy", return_value=None)
+    parse_args_actions.run_command(CLIParser.cli_parser.parse_args(["component", "local", "deploy"]))
+    assert mock_component_local.called
+
+
+def test_main_parse_args_local_list(mocker):
+    mock_component_local = mocker.patch("gdk.commands.component.component.local_list", return_value=None)
+    parse_args_actions.run_command(CLIParser.cli_parser.parse_args(["component", "local", "list"]))
+    assert mock_component_local.called
+
+
+def test_main_parse_args_local_remove(mocker):
+    mock_component_local = mocker.patch("gdk.commands.component.component.local_remove", return_value=None)
+    parse_args_actions.run_command(CLIParser.cli_parser.parse_args(["component", "local", "remove"]))
+    assert mock_component_local.called
+
+
 def test_main_parse_args_gdk(capsys):
     args = CLIParser.cli_parser.parse_args([])
     parse_args_actions.run_command(args)

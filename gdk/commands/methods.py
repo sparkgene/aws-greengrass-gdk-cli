@@ -25,6 +25,18 @@ def _gdk_component_list(d_args):
     component.list(d_args)
 
 
+def _gdk_component_local_deploy(d_args):
+    component.local_deploy(d_args)
+
+
+def _gdk_component_local_list(d_args):
+    component.local_list(d_args)
+
+
+def _gdk_component_local_remove(d_args):
+    component.local_remove(d_args)
+
+
 def _gdk_config_update(d_args):
     config.update(d_args)
 

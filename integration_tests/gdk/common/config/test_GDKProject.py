@@ -35,6 +35,7 @@ class GDKProjectTest(TestCase):
         assert gdk_config.test_config.gtf_version == "1.2.0"
         assert gdk_config.test_config.test_build_system == "maven"
         assert gdk_config.test_config.gtf_options == {}
+        assert gdk_config.component_local_config == {}
 
         c_dir = Path(".").resolve()
         assert c_dir.joinpath("greengrass-build") == gdk_config.gg_build_dir
