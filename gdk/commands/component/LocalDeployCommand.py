@@ -8,6 +8,7 @@ from gdk.commands.component.config.ComponentBuildConfiguration import ComponentB
 from gdk.commands.component.config.ComponentLocalConfiguration import ComponentLocalConfiguration
 from gdk.build_system.ComponentBuildSystem import ComponentBuildSystem
 from pathlib import Path
+import os
 import shutil
 from gdk.commands.component.transformer.LocalDeployRecipeTransformer import LocalDeployRecipeTransformer
 
@@ -193,6 +194,15 @@ class LocalDeployCommand(RemoteCommand):
                 target_dir,
                 dirs_exist_ok=True
             )
+
+            if self.project_config.build_system == "custom":
+                # custom build may generate zip file
+                if Path(target_dir).joinpath(self.project_config.component_name + ".zip").exists():
+                    logging.info("Unpack: " + self.project_config.component_name + ".zip")
+                    shutil.unpack_archive(
+                        Path(target_dir).joinpath(self.project_config.component_name + ".zip"),
+                        Path(target_dir).joinpath(self.project_config.component_name))
+                    os.remove(Path(target_dir).joinpath(self.project_config.component_name + ".zip"))
 
         logging.debug("Copied artifacts to %s", target_dir)
 
