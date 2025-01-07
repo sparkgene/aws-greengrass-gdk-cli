@@ -7,7 +7,6 @@ from gdk.commands.RemoteCommand import RemoteCommand
 from gdk.commands.component.config.ComponentBuildConfiguration import ComponentBuildConfiguration
 from gdk.commands.component.config.ComponentLocalConfiguration import ComponentLocalConfiguration
 from gdk.build_system.ComponentBuildSystem import ComponentBuildSystem
-import os
 from pathlib import Path
 import shutil
 from gdk.commands.component.transformer.LocalDeployRecipeTransformer import LocalDeployRecipeTransformer
@@ -160,14 +159,13 @@ class LocalDeployCommand(RemoteCommand):
         """
         Copy artifacts and recipes to local build directory
         """
-        target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir)
+        target_dir = self.local_deploy_config.gg_local_build_component_artifacts_dir
 
         if self.project_config.build_system == "zip":
             build_system = ComponentBuildSystem.get(self.project_config.build_system)
             zip_build_dir = utils.get_current_directory().joinpath(*build_system.build_folder).resolve()
             project_dir_name = utils.get_current_directory().name
-            source_dir = os.path.join(zip_build_dir, project_dir_name)
-
+            source_dir = zip_build_dir.joinpath(project_dir_name).resolve()
             # unpack dir name
             archive_file_name = project_dir_name
             zip_name_setting = self.project_config.build_options.get("zip_name", None)
@@ -186,8 +184,8 @@ class LocalDeployCommand(RemoteCommand):
                 dirs_exist_ok=True
             )
         else:
-            if target_dir.endswith("NEXT_PATCH"):
-                target_dir = str(self.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(version))
+            if target_dir.name == "NEXT_PATCH":
+                target_dir = self.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(version).resolve()
             source_dir = self.local_deploy_config.gg_build_component_artifacts_dir
             # other build system store artifacts in artifacts dir
             shutil.copytree(
@@ -195,14 +193,6 @@ class LocalDeployCommand(RemoteCommand):
                 target_dir,
                 dirs_exist_ok=True
             )
-            if self.project_config.build_system == "custom":
-                # custom build may be zip file
-                if Path(target_dir).joinpath(self.project_config.component_name + ".zip").exists():
-                    logging.info("Unpack: " + self.project_config.component_name + ".zip")
-                    shutil.unpack_archive(
-                        Path(target_dir).joinpath(self.project_config.component_name + ".zip"),
-                        Path(target_dir).joinpath(self.project_config.component_name))
-                    os.remove(Path(target_dir).joinpath(self.project_config.component_name + ".zip"))
 
         logging.debug("Copied artifacts to %s", target_dir)
 

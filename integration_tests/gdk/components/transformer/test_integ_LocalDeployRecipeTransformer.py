@@ -56,6 +56,26 @@ class ComponentBuildCommandIntegTest(TestCase):
             # Artifact is removed
             assert "Artifacts" not in recipe["Manifests"][0]
 
+    def test_transform_recipe_invalid_size(self):
+        recipe = self.c_dir.joinpath("integration_tests/test_data/recipes").joinpath("build_recipe_really_big.yaml").resolve()
+        shutil.copy(recipe, Path(self.tmpdir).joinpath("recipe.yaml").resolve())
+
+        brg = LocalDeployRecipeTransformer(ComponentBuildConfiguration({}))
+        new_recipe = self.tmpdir.joinpath("new.json")
+        with pytest.raises(Exception) as e:
+            brg.transform(recipe, new_recipe, "1.2.3")
+        assert str(e.value.args[0]).index("recipe file is too big") > 0
+
+    def test_transform_recipe_invalid_format(self):
+        recipe = self.c_dir.joinpath("integration_tests/test_data/recipes").joinpath("build_recipe_invalid.yaml").resolve()
+        shutil.copy(recipe, Path(self.tmpdir).joinpath("recipe.yaml").resolve())
+
+        brg = LocalDeployRecipeTransformer(ComponentBuildConfiguration({}))
+        new_recipe = self.tmpdir.joinpath("new.json")
+        with pytest.raises(Exception) as e:
+            brg.transform(recipe, new_recipe, "1.2.3")
+        assert str(e.value.args[0]).index("is invalid.") > 0
+
 
 def config():
     return {

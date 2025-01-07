@@ -150,7 +150,7 @@ class ComponentLocalConfigurationTest(TestCase):
             return_value=config_with_invalid_local_user(),
         )
         with pytest.raises(Exception) as err:
-            ComponentLocalConfiguration()
+            ComponentLocalConfiguration({})
         assert "SSH host configuration is required for remote command." == err.value.args[0]
 
 

@@ -174,6 +174,30 @@ class RemoteCommandTest(TestCase):
         )
 
     @patch('subprocess.run')
+    def test_run_command_on_local_fail(self, mock_run):
+        mock_result = Mock()
+        mock_result.returncode = 1
+        mock_result.stdout = "Run Command execute failed"
+        mock_run.return_value = mock_result
+
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = RemoteCommand({})
+        with pytest.raises(Exception) as e:
+            comm.run_command(["ls"])
+        assert (
+            "Command failed: ls"
+            == e.value.args[0]
+        )
+
+    @patch('subprocess.run')
     def test_check_remote_dir_exists(self, mock_run):
         mock_result = Mock()
         mock_result.returncode = 0
@@ -195,6 +219,51 @@ class RemoteCommandTest(TestCase):
             ['ssh', '-p', '8022', '-i', '/path/to/key',
              'remote-user@remote_host', 'ls', '/path/to/component'],
             shell=False, capture_output=True, text=True, timeout=60
+        )
+
+    @patch('subprocess.run')
+    def test_check_remote_dir_exists_with_create(self, mock_run):
+        mock_result = Mock()
+        mock_result.returncode = 1
+        mock_result.stderr = "No such file or directory"
+        mock_run.return_value = mock_result
+
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = RemoteCommand({})
+        mock_create_remote_dir = self.mocker.patch.object(comm, "_create_remote_dir", return_value=None)
+        comm._check_remote_dir_exist()
+        assert mock_create_remote_dir.assert_called_once
+
+    @patch('subprocess.run')
+    def test_check_remote_dir_exists_fail(self, mock_run):
+        mock_result = Mock()
+        mock_result.returncode = 1
+        mock_result.stderr = "Command failed"
+        mock_run.return_value = mock_result
+
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = RemoteCommand({})
+        with pytest.raises(Exception) as e:
+            comm._check_remote_dir_exist()
+        assert (
+            "Command failed: ssh -p 8022 -i /path/to/key remote-user@remote_host ls /path/to/component"
+            == e.value.args[0]
         )
 
     @patch('subprocess.run')

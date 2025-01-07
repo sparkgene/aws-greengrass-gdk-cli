@@ -1,4 +1,5 @@
 from gdk.commands.component.LocalDeployCommand import LocalDeployCommand
+from gdk.build_system.ComponentBuildSystem import ComponentBuildSystem
 import pytest
 import os
 from pathlib import Path
@@ -63,7 +64,23 @@ class LocalDeployCommandTest(TestCase):
         assert comm.local_deploy_config.remote_component_dir == "~/greengrass-components"
         assert comm.local_deploy_config.greengrass_dir == "/greengrass/v2"
 
-    def test_run_get_version_no_data(self):
+    def test_get_version_configured_version(self):
+
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        comm.local_deploy_config.component_version = "1.2.3"
+        version = comm._get_version()
+        assert version == "1.2.3"
+
+    def test_get_version_no_data(self):
 
         self.mocker.patch.object(LocalDeployCommand, "run_command", return_value="")
         shutil.copy(
@@ -79,7 +96,7 @@ class LocalDeployCommandTest(TestCase):
         version = comm._get_version()
         assert version == "0.0.1"
 
-    def test_run_get_version_with_data(self):
+    def test_get_version_with_data(self):
         component_list = """
 Components currently running in Greengrass:
 Component Name: aws.greengrass.Cli
@@ -103,9 +120,163 @@ Component Name: abc
         )
 
         comm = LocalDeployCommand({})
-        print(comm.local_deploy_config.component_name)
         version = comm._get_version()
         assert version == "0.1.1"
+
+    @patch('pathlib.Path.mkdir')
+    def test_create_build_dir(self, mock_path):
+
+        self.mocker.patch("gdk.common.utils.clean_dir", return_value=None)
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        comm._create_build_dir(version)
+
+        mock_path.assert_any_call(self.tmpdir + '/greengrass-build-local/artifacts/abc/1.0.0', parents=True, exist_ok=True)
+
+    @patch('shutil.copytree')
+    def test_copy_artifacts_zip_build(self, mock_shutil):
+
+        self.mocker.patch("gdk.common.utils.clean_dir", return_value=None)
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        comm._copy_artifacts(version)
+
+        assert comm.project_config.build_system == "zip"
+        build_folder = ComponentBuildSystem.get(comm.project_config.build_system)
+        source_dir = Path(self.tmpdir).joinpath(*build_folder.build_folder, Path(self.tmpdir).name).resolve()
+
+        target_dir = comm.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(
+            version,
+            Path(self.tmpdir).name).resolve()
+
+        mock_shutil.assert_called_once_with(source_dir, target_dir, dirs_exist_ok=True)
+
+    @patch('shutil.copytree')
+    def test_copy_artifacts_zip_build_with_option(self, mock_shutil):
+
+        self.mocker.patch("gdk.common.utils.clean_dir", return_value=None)
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        # target will use "build_options.zip_name" for destination
+        comm.project_config.build_options["zip_name"] = "testname"
+        comm._copy_artifacts(version)
+
+        assert comm.project_config.build_system == "zip"
+        build_folder = ComponentBuildSystem.get(comm.project_config.build_system)
+        source_dir = Path(self.tmpdir).joinpath(*build_folder.build_folder, Path(self.tmpdir).name).resolve()
+
+        target_dir = comm.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(
+            version,
+            "testname").resolve()
+
+        mock_shutil.assert_called_once_with(source_dir, target_dir, dirs_exist_ok=True)
+
+    @patch('shutil.copytree')
+    def test_copy_artifacts_zip_build_with_empty_option(self, mock_shutil):
+
+        self.mocker.patch("gdk.common.utils.clean_dir", return_value=None)
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        # target will use component name for destination
+        comm.project_config.build_options["zip_name"] = ""
+        comm._copy_artifacts(version)
+
+        assert comm.project_config.build_system == "zip"
+        build_folder = ComponentBuildSystem.get(comm.project_config.build_system)
+        source_dir = Path(self.tmpdir).joinpath(*build_folder.build_folder, Path(self.tmpdir).name).resolve()
+
+        target_dir = comm.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(
+            version,
+            comm.project_config.component_name).resolve()
+
+        mock_shutil.assert_called_once_with(source_dir, target_dir, dirs_exist_ok=True)
+
+    @patch('shutil.copytree')
+    def test_copy_artifacts_custom_build(self, mock_shutil):
+
+        self.mocker.patch("gdk.common.utils.clean_dir", return_value=None)
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local_custom_build.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        comm._copy_artifacts(version)
+
+        assert comm.project_config.build_system == "custom"
+        source_dir = comm.local_deploy_config.gg_build_component_artifacts_dir
+        target_dir = comm.local_deploy_config.gg_local_build_component_artifacts_dir.parent.joinpath(version).resolve()
+
+        mock_shutil.assert_called_once_with(source_dir, target_dir, dirs_exist_ok=True)
+
+    def test_create_recipe(self):
+
+        version = '1.0.0'
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local_custom_build.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+
+        Path.mkdir(comm.project_config.gg_build_recipes_dir, parents=True)
+        shutil.copy(
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+            Path(comm.project_config.gg_build_recipes_dir).joinpath(comm.project_config.recipe_file.name)
+        )
+        Path.mkdir(comm.local_deploy_config.gg_local_build_recipes_dir, parents=True)
+
+        comm._create_recipe(version)
+
+        generated_recipe_file = comm.local_deploy_config.gg_local_build_recipes_dir.joinpath(
+            f"{comm.project_config.component_name}-{version}.{comm.project_config.recipe_file.name.split('.')[-1]}")
+
+        assert Path(generated_recipe_file).exists
 
     @patch('subprocess.run')
     def test_run_command_success(self, mock_run):
@@ -139,6 +310,25 @@ Component Name: abc
              '--artifactDir', '/path/to/component/artifacts'],
             shell=False, capture_output=True, text=True, timeout=60
         )
+
+    def test_run_command_fail(self):
+        self.mocker.patch("pathlib.Path.iterdir", return_value=["/path/to/artifacts"])
+        self.mocker.patch("gdk.commands.component.component.build", side_effect=Exception("Build failed"))
+        self.mocker.patch.object(LocalDeployCommand, "_get_version", return_value="1.1.1")
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/config/config_with_local.json"),
+            Path(self.tmpdir).joinpath("gdk-config.json"),
+        )
+        shutil.copy(
+            Path(self.c_dir).joinpath("integration_tests/test_data/recipes/").joinpath("build_recipe.yaml"),
+            Path(self.tmpdir).joinpath("recipe.yaml"),
+        )
+
+        comm = LocalDeployCommand({})
+        with pytest.raises(Exception) as exc_info:
+            comm.run()
+
+        assert "Build failed" in str(exc_info.value)
 
     def test_copy_to_remote(self):
 
