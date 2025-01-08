@@ -95,6 +95,46 @@ Configure AWS CLI with your credentials as shown here - https://docs.aws.amazon.
 
 `gdk component publish`
 
+#### 4. Deploy Component for local development
+
+When developing components for AWS IoT Greengrass, you may want to deploy and test them locally. This command can deploy component using [greengrass-cli](https://docs.aws.amazon.com/greengrass/v2/developerguide/gg-cli-reference.html).
+
+`gdk component local list|deploy|remove` command can deploy|remove|list yout component to your Greengrass Core running local (or running on remote device). The command sends command over SSH command when you specift remote device.
+
+1. Update configuration in `gdk-config.json`
+   ```json
+    {
+        "component": {
+            "com.example.PythonHelloWorld": {
+                "author": "J. Doe",
+                "version": "NEXT_PATCH",
+                "build": {
+                    "build_system": "zip"
+                },
+                "publish": {
+                    "bucket": "my-s3-bucket",
+                    "region": "us-east-1"
+                },
+                "local":{
+                    "host":"<host name or IP address>",
+                    "port":"<Port number for ssh. default is 22>",
+                    "user":"<User name used for SSH>",
+                    "key_file":"<Identity file path used for SSH>",
+                    "component_dir":"",
+                    "greengrass_dir":""
+                }
+            }
+        },
+        "gdk_version": "1.0.0"
+    }
+   ```
+    1. `local.host` is required when deploying to a remote device.
+    1. `local.port` is required when deploying to a remote device.
+    1. `local.user` is required when deploying to a remote device.
+    1. `local.key_file` is recommended when deploying to a remote device. Leave empty if password is used for authentication.
+    1. `local.component_dir` is requiered when you want to specify the remote location. `~/greengrass-components` is used for default. This setting will be ignored when `local.host` is not specified(deploy component to the same device which is running Greengrass Core).
+    1. `local.greengrass_dir` is requiered when you change Greengrass Core install directory. `/greengrass/v2` is used for default.
+
 
 <br />
 
