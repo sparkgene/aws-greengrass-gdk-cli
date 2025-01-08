@@ -128,7 +128,7 @@ When developing components for AWS IoT Greengrass, you may want to deploy and te
         "gdk_version": "1.0.0"
     }
    ```
-    1. `local.host` is required when deploying to a remote device.
+    1. `local.host` is required when deploying to a remote device. In an environment where you connect to the outside through a proxy, please set the proxy in your ssh/config file.
     1. `local.port` is required when deploying to a remote device.
     1. `local.user` is required when deploying to a remote device.
     1. `local.key_file` is recommended when deploying to a remote device. Leave empty if password is used for authentication.
