@@ -31,7 +31,13 @@ class ZipTests(TestCase):
         zip = Zip()
 
         # Then
-        assert ["gdk-config.json", "greengrass-build", "recipe.json", ".env"] == zip.get_ignored_file_patterns(build_config)
+        assert [
+            "gdk-config.json",
+            "greengrass-build",
+            "greengrass-build-local",
+            "recipe.json",
+            ".env"
+        ] == zip.get_ignored_file_patterns(build_config)
 
     def test_zip_ignore_list_without_exclude_option(self):
         # Given
@@ -43,6 +49,7 @@ class ZipTests(TestCase):
         assert [
             "gdk-config.json",
             "greengrass-build",
+            "greengrass-build-local",
             "recipe.json",
             "**/test*",
             "**/.*",

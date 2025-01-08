@@ -31,6 +31,24 @@ def test_gdk_component_list(mocker):
     assert mock_component_list.call_count == 1
 
 
+def test_gdk_component_local_deploy(mocker):
+    mock_component_local_deploy = mocker.patch("gdk.commands.component.component.local_deploy", return_value=None)
+    methods._gdk_component_local_deploy({})
+    assert mock_component_local_deploy.call_count == 1
+
+
+def test_gdk_component_local_list(mocker):
+    mock_component_local_list = mocker.patch("gdk.commands.component.component.local_list", return_value=None)
+    methods._gdk_component_local_list({})
+    assert mock_component_local_list.call_count == 1
+
+
+def test_gdk_component_local_remove(mocker):
+    mock_component_local_remove = mocker.patch("gdk.commands.component.component.local_remove", return_value=None)
+    methods._gdk_component_local_remove({})
+    assert mock_component_local_remove.call_count == 1
+
+
 def test_gdk_config_update(mocker):
     mock_config_update = mocker.patch("gdk.commands.config.config.update", return_value=None)
     methods._gdk_config_update({})

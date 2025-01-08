@@ -1,0 +1,31 @@
+{
+    "component": {
+        "abc": {
+            "author": "abc",
+            "version": "NEXT_PATCH",
+            "build": {
+                "build_system": "custom",
+                "custom_build_command": "ls"
+            },
+            "publish": {
+                "bucket": "default",
+                "region": "us-east-1"
+            },
+            "local":{
+              "host":"remote_host",
+              "port":"8022",
+              "user":"remote-user",
+              "key_file":"/path/to/key",
+              "component_dir":"/path/to/component",
+              "greengrass_dir":"/path/to/greengrass"
+            }
+        }
+    },
+    "test-e2e": {
+        "otf_version": "1.2.0",
+        "otf_options": {
+            "tags": "testtags"
+        }
+    },
+    "gdk_version": "1.0.0"
+}
