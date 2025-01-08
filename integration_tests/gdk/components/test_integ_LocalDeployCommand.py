@@ -1,5 +1,7 @@
 from gdk.commands.component.LocalDeployCommand import LocalDeployCommand
 from gdk.build_system.ComponentBuildSystem import ComponentBuildSystem
+import gdk.common.consts as consts
+
 import pytest
 import os
 from pathlib import Path
@@ -61,7 +63,7 @@ class LocalDeployCommandTest(TestCase):
         assert comm.local_deploy_config.host == ""
         assert comm.local_deploy_config.port == "22"
         assert comm.local_deploy_config.key_file == ""
-        assert comm.local_deploy_config.remote_component_dir == "~/greengrass-components"
+        assert comm.local_deploy_config.remote_component_dir == consts.greengrass_local_build_dir
         assert comm.local_deploy_config.greengrass_dir == "/greengrass/v2"
 
     def test_get_version_configured_version(self):

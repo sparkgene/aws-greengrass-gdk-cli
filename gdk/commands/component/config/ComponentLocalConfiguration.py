@@ -72,6 +72,10 @@ class ComponentLocalConfiguration(GDKProject):
 
     def _get_component_dir(self):
         _component_dir = ""
+        if not self._get_host():
+            # if the deploy target is local, use component build directory
+            return consts.greengrass_local_build_dir
+
         _component_dir_args = self._args.get("component_dir")
         if _component_dir_args:
             _component_dir = _component_dir_args

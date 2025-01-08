@@ -26,7 +26,7 @@ class ComponentLocalConfigurationTest(TestCase):
         assert pconfig.user == ""
         assert pconfig.port == "22"
         assert pconfig.key_file == ""
-        assert pconfig.remote_component_dir == "~/greengrass-components"
+        assert pconfig.remote_component_dir == consts.greengrass_local_build_dir
         assert pconfig.greengrass_dir == "/greengrass/v2"
         assert pconfig.component_version == "1.0.0"
         gg_local_build_dir = Path(project_dir).joinpath(consts.greengrass_local_build_dir).resolve()
@@ -90,7 +90,7 @@ class ComponentLocalConfigurationTest(TestCase):
         assert pconfig.user == ""
         assert pconfig.port == "22"
         assert pconfig.key_file == ""
-        assert pconfig.remote_component_dir == "~/greengrass-components"
+        assert pconfig.remote_component_dir == consts.greengrass_local_build_dir
         assert pconfig.greengrass_dir == "/greengrass/v2"
         assert pconfig.component_version == "1.0.0"
         gg_local_build_dir = Path(project_dir).joinpath(consts.greengrass_local_build_dir).resolve()

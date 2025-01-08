@@ -6,6 +6,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from gdk.commands.RemoteCommand import RemoteCommand
+import gdk.common.consts as consts
 
 
 class RemoteCommandTest(TestCase):
@@ -59,7 +60,7 @@ class RemoteCommandTest(TestCase):
         assert comm.local_deploy_config.host == ""
         assert comm.local_deploy_config.port == "22"
         assert comm.local_deploy_config.key_file == ""
-        assert comm.local_deploy_config.remote_component_dir == "~/greengrass-components"
+        assert comm.local_deploy_config.remote_component_dir == consts.greengrass_local_build_dir
         assert comm.local_deploy_config.greengrass_dir == "/greengrass/v2"
 
     def test_RemoteCommand_config_settings(self):
