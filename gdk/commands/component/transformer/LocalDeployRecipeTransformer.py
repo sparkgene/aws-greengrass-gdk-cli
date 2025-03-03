@@ -17,6 +17,15 @@ class LocalDeployRecipeTransformer:
     def _read_recipe(self, recipe_file_path):
         return CaseInsensitiveRecipeFile().read(recipe_file_path)
 
+    def get_case_sensitive_key(self, dict_key, dict_obj):
+        """
+        get case sensitive dictionary key
+        """
+        for key in dict_obj:
+            if key.lower() == dict_key.lower():
+                return key
+        return None
+
     def transform(self, recipe_file_path, deploy_recipe_file, version) -> None:
         """
         Transform the component recipe to be deployed to Greengrass Core.
@@ -43,9 +52,10 @@ class LocalDeployRecipeTransformer:
             if "Artifacts" in component_recipe_dict["Manifests"][i]:
                 keep_artifact = False
                 for j in range(len(component_recipe_dict["Manifests"][i]["Artifacts"]) - 1, -1, -1):
-                    if "URI" in component_recipe_dict["Manifests"][i]["Artifacts"][j]:
-                        if component_recipe_dict["Manifests"][i]["Artifacts"][j]["URI"].startswith("s3:"):
-                            del component_recipe_dict["Manifests"][i]["Artifacts"][j]["URI"]
+                    uri_key = self.get_case_sensitive_key("uri", component_recipe_dict["Manifests"][i]["Artifacts"][j])
+                    if uri_key:
+                        if component_recipe_dict["Manifests"][i]["Artifacts"][j][uri_key].startswith("s3:"):
+                            del component_recipe_dict["Manifests"][i]["Artifacts"][j][uri_key]
                         else:
                             keep_artifact = True
                     else:
